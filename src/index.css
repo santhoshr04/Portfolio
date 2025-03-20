@@ -19,6 +19,25 @@
   display: block;
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050816;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #804dee;
+  border-radius: 10px;
+  border: 2px solid #804dee; /* White border around the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 .black-gradient {
   background: #000000; /* fallback for old browsers */
   background: -webkit-linear-gradient(
@@ -48,6 +67,41 @@
   background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
   background: -webkit-linear-gradient(-90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
 }
+
+
+.mixed-border-card {
+  position: relative;
+  padding: 20px;
+  border-radius: 12px;
+  background: #000; /* Card background */
+  color: #fff;
+  overflow: hidden;
+}
+
+.mixed-border-card::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  z-index: -1;
+  background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
+  border-radius: 14px;
+}
+
+.mixed-border-card::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  background: #000; /* Inner background same as card */
+  border-radius: 10px;
+  z-index: -1;
+}
+
 
 .orange-text-gradient {
   background: #f12711; /* fallback for old browsers */

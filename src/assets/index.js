@@ -22,6 +22,7 @@ import typescript from "./tech/typescript.png";
 import threejs from "./tech/threejs.svg";
 
 import icrew from "./company/icrew.png";
+import nexglimpse from "./company/nexglimpse.png";
 
 import carrent from "./carrent.png";
 import jobit from "./jobit.png";
@@ -50,6 +51,7 @@ export {
   typescript,
   threejs,
   icrew,
+  nexglimpse,
   carrent,
   jobit,
   tripguide,

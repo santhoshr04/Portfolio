@@ -16,6 +16,7 @@ import {
   figma,
   docker,
   icrew,
+  nexglimpse,
   carrent,
   jobit,
   tripguide,
@@ -141,9 +142,51 @@ const experiences = [
   {
     title: "Freelancer - Full Stack Web Developer",
     company_name: "Newglimpse",
+    icon: nexglimpse,
+    iconBg: "#ffffff",
+    date: "Jan 2023",
+    points: [
+      "Developed a Hospital Management System, optimizing hospital operations such as appointment scheduling and patient records.",
+      "Built custom web applications using HTML, CSS, JavaScript, PHP, Python, and SQL.",
+      "Designed and implemented user-friendly interfaces with modern UI frameworks.",
+      "Integrated databases and optimized backend performance for improved efficiency.",
+    ],
+  },
+];
+
+const Achievements = [
+  {
+    title: "Full Stack Developer",
+    company_name: "iCrewsystems",
     icon: icrew,
-    iconBg: "#383E56",
-    date: "Jan 2023 - Present",
+    iconBg: "#ffffff",
+    date: "Feb 2025 - Present",
+    points: [
+      "Developing and maintaining web applications using Laravel, Tailwind CSS, and other related technologies.",
+      "Collaborating with cross-functional teams to develop high-quality software solutions.",
+      "Implementing responsive design and ensuring cross-browser compatibility.",
+      "Participating in code reviews and providing constructive feedback to improve code quality.",
+    ],
+  },
+  {
+    title: "Internship Trainee - Full Stack Web Developer",
+    company_name: "iCrewsystems",
+    icon: icrew,
+    iconBg: "#ffffff",
+    date: "Jun 2024 - Mar 2025",
+    points: [
+      "Gained hands-on experience in Laravel and PHP for backend development.",
+      "Developed and maintained web applications, improving system performance and scalability.",
+      "Worked closely with senior developers to implement best coding practices.",
+      "Built and tested new features to enhance user experience.",
+    ],
+  },
+  {
+    title: "Freelancer - Full Stack Web Developer",
+    company_name: "Newglimpse",
+    icon: nexglimpse,
+    iconBg: "#ffffff",
+    date: "Jan 2023",
     points: [
       "Developed a Hospital Management System, optimizing hospital operations such as appointment scheduling and patient records.",
       "Built custom web applications using HTML, CSS, JavaScript, PHP, Python, and SQL.",
@@ -246,4 +289,4 @@ const projects = [
   },
 ];
 
-export { services, technologies, experiences, testimonials, projects };
+export { services, technologies, experiences, testimonials, projects, Achievements };

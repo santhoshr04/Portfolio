@@ -29,7 +29,7 @@ const GitHubActivity = () => {
             event.type === "PullRequestReviewEvent"
         );
 
-        setActivities(filteredEvents.slice(0, 5)); // Show only the latest 5 activities
+        setActivities(filteredEvents.slice(0, 6)); // Show only the latest 5 activities
       } catch (error) {
         console.error("Error fetching GitHub activity:", error);
       }
@@ -57,7 +57,7 @@ const GitHubActivity = () => {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {activities.length > 0 ? (
               activities.map((activity, index) => (
-                <div key={index} className="bg-tertiary p-4 rounded-xl shadow-md border border-gray-700">
+                <div key={index} className="bg-tertiary p-4 rounded-xl shadow-md">
                   <p className="text-lg font-semibold">{activity.type.replace(/([A-Z])/g, " $1")}</p>
                   <p className="text-sm text-gray-400 mt-1">
                     Repo:{" "}
