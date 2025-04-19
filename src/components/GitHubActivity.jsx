@@ -7,8 +7,9 @@ import { fadeIn, textVariant } from "../utils/motion";
 
 const GitHubActivity = () => {
   const [activities, setActivities] = useState([]);
-  const username = "santhoshr04"; // Replace with your GitHub username
-  const token = "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"; // Replace with your GitHub token
+  const username = import.meta.env.VITE_GITHUB_USERNAME;
+  const token = import.meta.env.VITE_GITHUB_TOKEN;
+
 
   useEffect(() => {
     const fetchGitHubActivity = async () => {
@@ -57,7 +58,7 @@ const GitHubActivity = () => {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {activities.length > 0 ? (
               activities.map((activity, index) => (
-                <div key={index} className="bg-tertiary p-4 rounded-xl shadow-md">
+                <Tilt key={index} className="bg-tertiary p-4 rounded-xl shadow-md">
                   <p className="text-lg font-semibold">{activity.type.replace(/([A-Z])/g, " $1")}</p>
                   <p className="text-sm text-gray-400 mt-1">
                     Repo:{" "}
@@ -71,7 +72,7 @@ const GitHubActivity = () => {
                     </p>
                   )}
                   <p className="text-xs text-gray-500 mt-2">{new Date(activity.created_at).toLocaleString()}</p>
-                </div>
+                </Tilt>
               ))
             ) : (
               <p className="text-center text-gray-400">Loading activity...</p>
