@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-import { styles } from "../styles";
 import { navLinks } from "../constants";
-import { logo, menu, close } from "../assets";
 
 const Navbar = () => {
   const [active, setActive] = useState("");
@@ -12,89 +9,113 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      if (scrollTop > 100) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 80);
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <nav
-      className={`${
-        styles.paddingX
-      } w-full flex items-center py-5 fixed top-0 z-20 ${
-        scrolled ? "bg-primary" : "bg-transparent"
-      }`}
+      className={`
+        fixed top-0 w-full z-50 transition-all duration-500
+        ${scrolled 
+          ? "backdrop-blur-xl bg-black/60 border-b border-white/10 shadow-lg" 
+          : "bg-transparent"}
+      `}
     >
-      <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+        {/* 🔥 Brand */}
         <Link
-          to='/'
-          className='flex items-center gap-2'
-          onClick={() => {
-            setActive("");
-            window.scrollTo(0, 0);
-          }}
+          to="/"
+          onClick={() => window.scrollTo(0, 0)}
+          className="group"
         >
-          {/* <img src={logo} alt='logo' className='w-9 h-9 object-contain' /> */}
-          <p className='text-white text-[18px] font-bold cursor-pointer flex '>
-            Santhosh &nbsp;
-            <span className='sm:block hidden'> .Dev</span>
-          </p>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600 bg-clip-text text-transparent">
+            Santhosh.Dev
+          </h1>
         </Link>
 
-        <ul className='list-none hidden sm:flex flex-row gap-10'>
+        {/* 💻 Desktop Menu */}
+        <ul className="hidden sm:flex items-center gap-8">
           {navLinks.map((nav) => (
-            <li
-              key={nav.id}
-              className={`${
-                active === nav.title ? "text-white" : "text-secondary"
-              } hover:text-white text-[18px] font-medium cursor-pointer`}
-              onClick={() => setActive(nav.title)}
-            >
-              <a href={`#${nav.id}`}>{nav.title}</a>
+            <li key={nav.id} className="relative group">
+              <a
+                href={`#${nav.id}`}
+                onClick={() => setActive(nav.title)}
+                className={`text-[16px] transition-colors duration-300 ${
+                  active === nav.title
+                    ? "text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                {nav.title}
+              </a>
+
+              {/* Animated underline */}
+              <span
+                className={`
+                  absolute left-0 -bottom-1 h-[2px] bg-gradient-to-r 
+                  from-purple-400 to-pink-400 transition-all duration-300
+                  ${active === nav.title ? "w-full" : "w-0 group-hover:w-full"}
+                `}
+              />
             </li>
           ))}
+
+          {/* 🚀 CTA Button */}
+          <a
+            href="#contact"
+            className="ml-4 px-5 py-2 rounded-xl bg-gradient-to-r 
+                       from-purple-500 to-blue-500 text-white text-sm font-semibold
+                       hover:scale-105 transition duration-300 shadow-lg"
+          >
+            Let’s Talk
+          </a>
         </ul>
 
-        <div className='sm:hidden flex flex-1 justify-end items-center'>
-          <img
-            src={toggle ? close : menu}
-            alt='menu'
-            className='w-[28px] h-[28px] object-contain'
+        {/* 📱 Mobile Toggle */}
+        <div className="sm:hidden">
+          <button
             onClick={() => setToggle(!toggle)}
-          />
-
-          <div
-            className={`${
-              !toggle ? "hidden" : "flex"
-            } p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px] z-10 rounded-xl`}
+            className="text-white text-2xl"
           >
-            <ul className='list-none flex justify-end items-start flex-1 flex-col gap-4'>
-              {navLinks.map((nav) => (
-                <li
-                  key={nav.id}
-                  className={`font-poppins font-medium cursor-pointer text-[16px] ${
-                    active === nav.title ? "text-white" : "text-secondary"
-                  }`}
-                  onClick={() => {
-                    setToggle(!toggle);
-                    setActive(nav.title);
-                  }}
-                >
-                  <a href={`#${nav.id}`}>{nav.title}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {toggle ? "✕" : "☰"}
+          </button>
         </div>
       </div>
+
+      {/* 📱 Mobile Menu */}
+      {toggle && (
+        <div className="sm:hidden backdrop-blur-xl bg-black/80 border-t border-white/10 px-6 py-6">
+          <ul className="flex flex-col gap-6">
+            {navLinks.map((nav) => (
+              <li key={nav.id}>
+                <a
+                  href={`#${nav.id}`}
+                  onClick={() => {
+                    setToggle(false);
+                    setActive(nav.title);
+                  }}
+                  className="text-gray-300 hover:text-white transition"
+                >
+                  {nav.title}
+                </a>
+              </li>
+            ))}
+
+            <a
+              href="#contact"
+              className="mt-4 px-5 py-3 rounded-xl bg-gradient-to-r 
+                         from-purple-500 to-blue-500 text-white font-semibold text-center"
+            >
+              Let’s Talk
+            </a>
+          </ul>
+        </div>
+      )}
     </nav>
   );
 };

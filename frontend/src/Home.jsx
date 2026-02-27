@@ -463,49 +463,6 @@ function Home() {
                     </div>
                 </div>
             </section>
-
-            <footer className="bg-gray-900 text-gray-300 py-10 mt-20">
-                <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    
-                    {/* Brand Info */}
-                    <div>
-                    <h3 className="text-2xl font-bold text-white mb-4">Artistic</h3>
-                    <p className="text-gray-400">
-                        Capturing moments that captivate your heart. Let us make your memories timeless.
-                    </p>
-                    </div>
-
-                    {/* Quick Links */}
-                    <div>
-                    <h4 className="text-xl font-semibold text-white mb-4">Quick Links</h4>
-                    <ul className="space-y-2">
-                        <li>
-                        <a href="/" className="hover:text-purple-400 transition duration-300">Home</a>
-                        </li>
-                        <li>
-                        <a href="/about" className="hover:text-purple-400 transition duration-300">About</a>
-                        </li>
-                        <li>
-                        <a href="/cal-booking" className="hover:text-purple-400 transition duration-300">Contact</a>
-                        </li>
-                    </ul>
-                    </div>
-
-                    {/* Contact Info */}
-                    <div>
-                    <h4 className="text-xl font-semibold text-white mb-4">Get In Touch</h4>
-                    <p className="text-gray-400 mb-2">Email: hello@artistic.com</p>
-                    <p className="text-gray-400 mb-2">Phone: +123 456 7890</p>
-                    <p className="text-gray-400">Location: Artistic Studio, Downtown</p>
-                    </div>
-                    
-                </div>
-
-                {/* Bottom Text */}
-                <div className="border-t border-gray-700 mt-10 pt-6 text-center text-gray-500 text-sm">
-                    © {new Date().getFullYear()} Artistic. All rights reserved.
-                </div>
-            </footer>
         </div>
     );
 }
