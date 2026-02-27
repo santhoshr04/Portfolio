@@ -19,7 +19,7 @@ import reactjs from "./tech/reactjs.png";
 import redux from "./tech/redux.png";
 import tailwind from "./tech/tailwind.png";
 import php from "./tech/php.png";
-import laravel from "./tech/laravel.png"
+import laravel from "./tech/Laravel.png"
 
 import icrew from "./company/icrew.png";
 import nexglimpse from "./company/nexglimpse.png";
