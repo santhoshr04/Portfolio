@@ -13,6 +13,17 @@
   color-scheme: dark;
 }
 
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
 .hash-span {
   margin-top: -100px;
   padding-bottom: 100px;

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { styles } from "../styles";
 
 const floatingVariants = {
@@ -22,14 +22,107 @@ const roles = [
 
 const Hero = () => {
   const [index, setIndex] = useState(0);
+  const [messages, setMessages] = useState([]);
+  const [typingMessage, setTypingMessage] = useState(null); // in-progress bot message text
+  const [isTyping, setIsTyping] = useState(false);
+  const chatRef = useRef(null);
+  const hasStarted = useRef(false);
 
+  /* ================= ROLE ROTATION ================= */
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % roles.length);
     }, 2500);
-
     return () => clearInterval(interval);
   }, []);
+
+  /* ================= AUTO SCROLL ================= */
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      if (chatRef.current) {
+        chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [messages, typingMessage, isTyping]);
+
+  /* ================= CHAT DEMO ================= */
+  useEffect(() => {
+    if (hasStarted.current) return;
+    hasStarted.current = true;
+
+    let mounted = true;
+
+    const chatFlow = [
+      { text: "Hello. Welcome to our support desk. How may I assist you today?", sender: "bot" },
+      { text: "I would like to schedule a meeting.", sender: "user" },
+      { text: "Certainly. Please let me know your preferred date and time for the meeting.", sender: "bot" },
+      { text: "Tomorrow at 4 PM.", sender: "user" },
+      { text: "Thank you. I have scheduled your meeting for tomorrow at 4 PM. You will receive a confirmation shortly. Is there anything else I can help you with ...?", sender: "bot" },
+    ];
+
+    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+    const typeMessage = async (text) => {
+      setIsTyping(true);
+      setTypingMessage("");
+      await sleep(800);
+
+      if (!mounted) return;
+
+      for (let i = 1; i <= text.length; i++) {
+        if (!mounted) return;
+        setTypingMessage(text.slice(0, i));
+        await sleep(
+          text[i - 1] === "." || text[i - 1] === "?"
+            ? 300   // longer pause after sentence
+            : 40 + Math.random() * 30 // random human typing speed
+        );
+      }
+
+      if (!mounted) return;
+      // Clear typing bubble first so we don't show same text twice
+      setTypingMessage(null);
+      setIsTyping(false);
+      setMessages((prev) => [...prev, { text, sender: "bot", id: `bot-${Date.now()}` }]);
+    };
+
+    const startChat = async () => {
+      setMessages([]);
+      setTypingMessage(null);
+      setIsTyping(false);
+      await sleep(1000); // brief delay before first message
+
+      while (mounted) {
+        for (let msg of chatFlow) {
+          if (!mounted) return;
+
+          if (msg.sender === "user") {
+            setMessages((prev) => [...prev, { ...msg, id: `user-${Date.now()}` }]);
+            await sleep(1200);
+          } else {
+            await typeMessage(msg.text);
+            await sleep(700);
+          }
+        }
+
+        if (!mounted) return;
+        await sleep(4000);
+        if (!mounted) return;
+        setMessages([]);
+        setTypingMessage(null);
+        await sleep(600);
+      }
+    };
+
+    startChat();
+
+    return () => {
+      mounted = false;
+      hasStarted.current = false; // allow re-run in React Strict Mode
+    };
+  }, []);
+  
 
   return (
     <section className="relative w-full h-screen mx-auto overflow-hidden bg-black">
@@ -165,21 +258,80 @@ const Hero = () => {
       </div>
 
       {/* � Optional Floating Glass Card (Right Side Preview) */}
+      {/* ================= CHAT PREVIEW ================= */}
       <motion.div
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 1.2 }}
-        className="absolute right-20 top-1/2 -translate-y-1/2 hidden lg:block"
+        className="absolute right-4 lg:right-20 top-[42%] -translate-y-1/2 w-[380px] hidden md:block"
       >
-        <div className="w-80 p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
-          <p className="text-sm text-purple-400 mb-2">AI Chatbot Preview</p>
-          <div className="space-y-3 text-sm text-gray-300">
-            <div className="bg-white/5 p-2 rounded-lg">👋 Hello! How can I help you today?</div>
-            <div className="bg-purple-600/20 p-2 rounded-lg text-right">Book a demo</div>
-            <div className="bg-white/5 p-2 rounded-lg">📅 Sure! Let me schedule that for you.</div>
+        <div className="w-full p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
+
+          {/* Header */}
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold shadow-lg">
+              AI
+            </div>
+
+            <div>
+              <p className="text-sm text-white font-medium">AI Assistant</p>
+
+              <div className="flex items-center space-x-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <p className="text-xs text-green-400 font-medium">Live Now</p>
+              </div>
+            </div>
           </div>
+
+          {/* Messages */}
+          <div
+            ref={chatRef}
+            className="space-y-3 text-sm text-gray-300 max-h-64 overflow-y-auto overflow-x-hidden scrollbar-hide"
+          >
+            {messages.map((msg) => (
+              <motion.div
+                key={msg.id}
+                initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+                className={`p-3 rounded-xl max-w-[85%] ${
+                  msg.sender === "user"
+                    ? "bg-purple-600/20 ml-auto text-right"
+                    : "bg-white/5"
+                }`}
+              >
+                {msg.text}
+                <div className="text-[10px] text-gray-500 mt-1">
+                  {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </div>
+              </motion.div>
+            ))}
+
+            {/* In-progress typing message (visible and updates character by character) */}
+            {(typingMessage !== null || isTyping) && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="p-3 rounded-xl max-w-[85%] bg-white/5"
+              >
+                {typingMessage}
+                {isTyping && (
+                  <span className="inline-block w-[2px] h-4 bg-gray-400 ml-0.5 animate-pulse align-middle" />
+                )}
+                <div className="text-[10px] text-gray-500 mt-1">
+                  {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </div>
+              </motion.div>
+            )}
+          </div>
+
         </div>
       </motion.div>
+
 
       {/* �🔽 Scroll Indicator */}
       <div className="absolute bottom-10 w-full flex justify-center">
