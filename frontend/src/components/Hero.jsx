@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { styles } from "../styles";
 
 const floatingVariants = {
@@ -12,22 +13,39 @@ const floatingVariants = {
   },
 };
 
+const roles = [
+  "AI Engineer",
+  "Automation Developer",
+  "Full Stack Developer",
+  "Chatbot Architect",
+];
+
 const Hero = () => {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % roles.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative w-full h-screen mx-auto overflow-hidden bg-black">
 
-      {/* 🌌 Grid Background (UNCHANGED) */}
+      {/* 🌌 Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
 
-      {/* 🌟 Center Radial Glow */}
+      {/* 🌟 Center Glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="w-[900px] h-[900px] bg-purple-700/10 rounded-full blur-[150px]" />
       </div>
 
-      {/* 🔥 Soft Purple Glow */}
+      {/* 🔥 Soft Glow */}
       <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[120px]" />
 
-      {/* 🌈 Floating Gradient Orbs */}
+      {/* 🌈 Floating Orbs */}
       <motion.div
         variants={floatingVariants}
         animate="animate"
@@ -70,16 +88,32 @@ const Hero = () => {
       {/* 🚀 Content */}
       <div className={`absolute inset-0 max-w-7xl mx-auto ${styles.paddingX} flex flex-col justify-center`}>
 
-        {/* 🚀 Badge */}
+        {/* 🚀 Premium Animated Role Badge */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-6"
+          className="mb-4"
         >
-          <span className="px-4 py-1 text-sm bg-purple-500/10 border border-purple-500/30 text-purple-400 rounded-full">
-            AI Engineer • Automation Developer • Full Stack
-          </span>
+          <div className="relative px-6 py-2 text-sm border border-purple-500/20 rounded-full 
+                          bg-white/5 backdrop-blur-xl w-fit overflow-hidden">
+
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={index}
+                initial={{ opacity: 0, filter: "blur(8px)", y: 10 }}
+                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                exit={{ opacity: 0, filter: "blur(8px)", y: -10 }}
+                transition={{ duration: 0.6 }}
+                className="font-medium bg-gradient-to-r 
+                          from-purple-400 via-pink-400 to-indigo-400 
+                          bg-clip-text text-transparent"
+              >
+                {roles[index]}
+              </motion.span>
+            </AnimatePresence>
+
+          </div>
         </motion.div>
 
         {/* 🔥 Main Heading */}
@@ -102,7 +136,7 @@ const Hero = () => {
           transition={{ duration: 1 }}
           className="mt-6 text-lg sm:text-xl text-gray-300 max-w-2xl leading-relaxed"
         >
-          I build AI systems that never sleep — turning conversations into customers, 
+          I build AI systems that never sleep — turning conversations into customers,
           automating operations, and scaling your business without hiring more people.
         </motion.p>
 
@@ -130,7 +164,7 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      {/* 💎 Optional Floating Glass Card (Right Side Preview) */}
+      {/* � Optional Floating Glass Card (Right Side Preview) */}
       <motion.div
         initial={{ opacity: 0, x: 100 }}
         animate={{ opacity: 1, x: 0 }}
@@ -147,7 +181,7 @@ const Hero = () => {
         </div>
       </motion.div>
 
-      {/* 🔽 Scroll Indicator */}
+      {/* �🔽 Scroll Indicator */}
       <div className="absolute bottom-10 w-full flex justify-center">
         <motion.div
           animate={{ y: [0, 20, 0] }}
