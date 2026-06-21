@@ -1,349 +1,104 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+
+import { NeuralCoreCanvas } from "./canvas";
 import { styles } from "../styles";
 
-const floatingVariants = {
-  animate: {
-    y: [0, -20, 0],
-    transition: {
-      duration: 6,
-      repeat: Infinity,
-      ease: "easeInOut",
-    },
-  },
-};
-
-const roles = [
-  "AI Engineer",
-  "Automation Developer",
-  "Full Stack Developer",
-  "Chatbot Architect",
-];
-
 const Hero = () => {
-  const [index, setIndex] = useState(0);
-  const [messages, setMessages] = useState([]);
-  const [typingMessage, setTypingMessage] = useState(null); // in-progress bot message text
-  const [isTyping, setIsTyping] = useState(false);
-  const chatRef = useRef(null);
-  const hasStarted = useRef(false);
-
-  /* ================= ROLE ROTATION ================= */
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % roles.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
-  /* ================= AUTO SCROLL ================= */
-  useEffect(() => {
-    const raf = requestAnimationFrame(() => {
-      if (chatRef.current) {
-        chatRef.current.scrollTop = chatRef.current.scrollHeight;
-      }
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [messages, typingMessage, isTyping]);
-
-  /* ================= CHAT DEMO ================= */
-  useEffect(() => {
-    if (hasStarted.current) return;
-    hasStarted.current = true;
-
-    let mounted = true;
-
-    const chatFlow = [
-      { text: "Hello. Welcome to our support desk. How may I assist you today?", sender: "bot" },
-      { text: "I would like to schedule a meeting.", sender: "user" },
-      { text: "Certainly. Please let me know your preferred date and time for the meeting.", sender: "bot" },
-      { text: "Tomorrow at 4 PM.", sender: "user" },
-      { text: "Thank you. I have scheduled your meeting for tomorrow at 4 PM. You will receive a confirmation shortly. Is there anything else I can help you with ...?", sender: "bot" },
-    ];
-
-    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-
-    const typeMessage = async (text) => {
-      setIsTyping(true);
-      setTypingMessage("");
-      await sleep(800);
-
-      if (!mounted) return;
-
-      for (let i = 1; i <= text.length; i++) {
-        if (!mounted) return;
-        setTypingMessage(text.slice(0, i));
-        await sleep(
-          text[i - 1] === "." || text[i - 1] === "?"
-            ? 300   // longer pause after sentence
-            : 40 + Math.random() * 30 // random human typing speed
-        );
-      }
-
-      if (!mounted) return;
-      // Clear typing bubble first so we don't show same text twice
-      setTypingMessage(null);
-      setIsTyping(false);
-      setMessages((prev) => [...prev, { text, sender: "bot", id: `bot-${Date.now()}` }]);
-    };
-
-    const startChat = async () => {
-      setMessages([]);
-      setTypingMessage(null);
-      setIsTyping(false);
-      await sleep(1000); // brief delay before first message
-
-      while (mounted) {
-        for (let msg of chatFlow) {
-          if (!mounted) return;
-
-          if (msg.sender === "user") {
-            setMessages((prev) => [...prev, { ...msg, id: `user-${Date.now()}` }]);
-            await sleep(1200);
-          } else {
-            await typeMessage(msg.text);
-            await sleep(700);
-          }
-        }
-
-        if (!mounted) return;
-        await sleep(4000);
-        if (!mounted) return;
-        setMessages([]);
-        setTypingMessage(null);
-        await sleep(600);
-      }
-    };
-
-    startChat();
-
-    return () => {
-      mounted = false;
-      hasStarted.current = false; // allow re-run in React Strict Mode
-    };
-  }, []);
-  
-
   return (
-    <section className="relative w-full h-screen mx-auto overflow-hidden bg-black">
+    <section className="relative min-h-[90vh] overflow-hidden bg-transparent pt-28">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-      {/* 🌌 Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
-
-      {/* 🌟 Center Glow */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[900px] h-[900px] bg-purple-700/10 rounded-full blur-[150px]" />
-      </div>
-
-      {/* 🔥 Soft Glow */}
-      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[120px]" />
-
-      {/* 🌈 Floating Orbs */}
-      <motion.div
-        variants={floatingVariants}
-        animate="animate"
-        className="absolute top-1/4 right-20 w-72 h-72 bg-pink-500/20 rounded-full blur-[120px]"
-      />
-
-      <motion.div
-        variants={floatingVariants}
-        animate="animate"
-        className="absolute bottom-20 left-1/3 w-64 h-64 bg-indigo-500/20 rounded-full blur-[140px]"
-      />
-
-      {/* ✨ Tiny Particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 left-1/4 w-1 h-1 bg-purple-400 rounded-full animate-ping" />
-        <div className="absolute top-2/3 right-1/3 w-1 h-1 bg-pink-400 rounded-full animate-ping delay-1000" />
-        <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-indigo-400 rounded-full animate-ping delay-500" />
-      </div>
-
-      {/* 🧠 Floating Tech Words */}
-      <motion.div
-        animate={{ y: [0, -30, 0] }}
-        transition={{ duration: 8, repeat: Infinity }}
-        className="absolute top-32 left-10 text-purple-500/20 text-sm font-mono hidden md:block"
+      <div
+        className={`relative z-10 mx-auto grid min-h-[calc(90vh-7rem)] max-w-7xl items-center gap-6 pb-10 ${styles.paddingX} lg:grid-cols-[0.92fr_1.08fr] lg:gap-8`}
       >
-        AI • Automation • Chatbots • APIs
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [0, 20, 0] }}
-        transition={{ duration: 10, repeat: Infinity }}
-        className="absolute bottom-32 right-20 text-purple-500/20 text-sm font-mono hidden md:block"
-      >
-        Node • React • n8n • OpenAI
-      </motion.div>
-
-      {/* 🌑 Bottom Fade */}
-      <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-black to-transparent pointer-events-none" />
-
-      {/* 🚀 Content */}
-      <div className={`absolute inset-0 max-w-7xl mx-auto ${styles.paddingX} flex flex-col justify-center`}>
-
-        {/* 🚀 Premium Animated Role Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-4"
-        >
-          <div className="relative px-6 py-2 text-sm border border-purple-500/20 rounded-full 
-                          bg-white/5 backdrop-blur-xl w-fit overflow-hidden">
-
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={index}
-                initial={{ opacity: 0, filter: "blur(8px)", y: 10 }}
-                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-                exit={{ opacity: 0, filter: "blur(8px)", y: -10 }}
-                transition={{ duration: 0.6 }}
-                className="font-medium bg-gradient-to-r 
-                          from-purple-400 via-pink-400 to-indigo-400 
-                          bg-clip-text text-transparent"
-              >
-                {roles[index]}
-              </motion.span>
-            </AnimatePresence>
-
-          </div>
-        </motion.div>
-
-        {/* 🔥 Main Heading */}
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className={`${styles.heroHeadText} text-white leading-tight`}
-        >
-          Hi, I'm{" "}
-          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600 bg-clip-text text-transparent">
-            Santhosh
-          </span>
-        </motion.h1>
-
-        {/* 🧠 Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="mt-6 text-lg sm:text-xl text-gray-300 max-w-2xl leading-relaxed"
-        >
-          I build AI systems that never sleep — turning conversations into customers,
-          automating operations, and scaling your business without hiring more people.
-        </motion.p>
-
-        {/* 🚀 CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2 }}
-          className="mt-12"
-        >
-          <a
-            href="#contact"
-            className="relative inline-flex items-center justify-center px-8 py-3 font-semibold text-white rounded-xl
-                       bg-black border border-purple-500/40
-                       hover:border-purple-400 transition duration-300
-                       group overflow-hidden"
+        <div className="relative z-30 min-w-0 py-8">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.55 }}
+            className="mb-7 flex items-center gap-3"
           >
-            <span className="absolute inset-0 bg-purple-600/20 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
-            <span className="absolute -left-20 top-0 h-full w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent
-                             rotate-12 transform transition-all duration-700 group-hover:left-[120%]" />
-            <span className="relative z-10">
-              Build My AI Chatbot
+            <span className="h-px w-10 bg-purple-400" />
+            <span className="text-[10px] font-semibold uppercase tracking-[0.34em] text-gray-400">
+              Santhosh · Digital builder
             </span>
-          </a>
-        </motion.div>
-      </div>
+          </motion.div>
 
-      {/* � Optional Floating Glass Card (Right Side Preview) */}
-      {/* ================= CHAT PREVIEW ================= */}
-      <motion.div
-        initial={{ opacity: 0, x: 100 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1.2 }}
-        className="absolute right-4 lg:right-20 top-[42%] -translate-y-1/2 w-[380px] hidden md:block"
-      >
-        <div className="w-full p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:shadow-purple-500/20 transition-all duration-500">
+          <h1 className="select-none text-[58px] font-black uppercase leading-[0.8] tracking-[-0.075em] sm:text-[78px] lg:text-[84px] xl:text-[94px]">
+            <motion.span
+              initial={{ opacity: 0, y: 42 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08, duration: 0.7, ease: "easeOut" }}
+              className="block text-white"
+            >
+              Build.
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 42 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18, duration: 0.7, ease: "easeOut" }}
+              className="block text-transparent [-webkit-text-stroke:1px_rgba(196,181,253,0.65)]"
+            >
+              Automate.
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 42 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.28, duration: 0.7, ease: "easeOut" }}
+              className="block bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-300 bg-clip-text pb-4 text-transparent"
+            >
+              Evolve.
+            </motion.span>
+          </h1>
 
-          {/* Header */}
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold shadow-lg">
-              AI
-            </div>
-
-            <div>
-              <p className="text-sm text-white font-medium">AI Assistant</p>
-
-              <div className="flex items-center space-x-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                <p className="text-xs text-green-400 font-medium">Live Now</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div
-            ref={chatRef}
-            className="space-y-3 text-sm text-gray-300 max-h-64 overflow-y-auto overflow-x-hidden scrollbar-hide"
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.48, duration: 0.6 }}
+            className="mt-8 flex flex-wrap items-center gap-5"
           >
-            {messages.map((msg) => (
-              <motion.div
-                key={msg.id}
-                initial={{ opacity: 0, scale: 0.95, y: 8 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
-                className={`p-3 rounded-xl max-w-[85%] ${
-                  msg.sender === "user"
-                    ? "bg-purple-600/20 ml-auto text-right"
-                    : "bg-white/5"
-                }`}
-              >
-                {msg.text}
-                <div className="text-[10px] text-gray-500 mt-1">
-                  {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                </div>
-              </motion.div>
-            ))}
+            <a
+              href="#about"
+              className="group flex items-center gap-4 rounded-full border border-white/15 bg-white px-2 py-2 pl-6 text-sm font-bold text-black transition hover:-translate-y-1 hover:border-purple-300"
+            >
+              See how I work
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white transition group-hover:rotate-45">
+                ↗
+              </span>
+            </a>
+            <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-gray-500">
+              Full stack × AI × Automation
+            </span>
+          </motion.div>
+        </div>
 
-            {/* In-progress typing message (visible and updates character by character) */}
-            {(typingMessage !== null || isTyping) && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 8 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className="p-3 rounded-xl max-w-[85%] bg-white/5"
-              >
-                {typingMessage}
-                {isTyping && (
-                  <span className="inline-block w-[2px] h-4 bg-gray-400 ml-0.5 animate-pulse align-middle" />
-                )}
-                <div className="text-[10px] text-gray-500 mt-1">
-                  {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                </div>
-              </motion.div>
-            )}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.18, duration: 0.8, ease: "easeOut" }}
+          className="relative z-10 h-[430px] min-w-0 overflow-hidden bg-transparent sm:h-[520px] lg:h-[620px]"
+        >
+          <div className="pointer-events-none absolute left-0 top-1/2 z-20 hidden h-[72%] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-purple-300/20 to-transparent lg:block" />
+          <div className="absolute inset-0 h-full w-full cursor-grab active:cursor-grabbing">
+            <NeuralCoreCanvas />
           </div>
 
-        </div>
-      </motion.div>
-
-
-      {/* �🔽 Scroll Indicator */}
-      <div className="absolute bottom-10 w-full flex justify-center">
-        <motion.div
-          animate={{ y: [0, 20, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-purple-400 rounded-full flex justify-center items-start p-1"
-        >
-          <div className="w-2 h-2 bg-purple-400 rounded-full" />
+          <motion.div
+            animate={{ opacity: [0.25, 0.75, 0.25] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+            className="pointer-events-none absolute bottom-7 right-5 flex items-center gap-2 text-[9px] uppercase tracking-[0.28em] text-gray-600"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+            Interactive core
+          </motion.div>
         </motion.div>
       </div>
 
+      <div className="pointer-events-none absolute bottom-5 left-1/2 z-20 hidden -translate-x-1/2 items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-gray-700 sm:flex">
+        <span>Scroll</span>
+        <span className="h-px w-10 bg-gray-800" />
+        <span>Explore</span>
+      </div>
     </section>
   );
 };

@@ -15,6 +15,8 @@ import {
   git,
   figma,
   docker,
+  adonisjs,
+  fusionPro,
   icrew,
   nexglimpse,
   carrent,
@@ -25,11 +27,15 @@ import {
 export const navLinks = [
   {
     id: "about",
-    title: "About",
+    title: "Value",
   },
   {
     id: "work",
-    title: "Work",
+    title: "Experience",
+  },
+  {
+    id: "services",
+    title: "Services",
   }
 ];
 
@@ -86,6 +92,10 @@ const technologies = [
     icon: nodejs,
   },
   {
+    name: "AdonisJS",
+    icon: adonisjs,
+  },
+  {
     name: "MongoDB",
     icon: mongodb,
   },
@@ -104,6 +114,40 @@ const technologies = [
   {
     name: "docker",
     icon: docker,
+  },
+  {
+    name: "Fusion Pro",
+    icon: fusionPro,
+  },
+  {
+    name: "TypeScript",
+    monogram: "TS",
+    accent: "#3178c6",
+  },
+  {
+    name: "MySQL",
+    monogram: "SQL",
+    accent: "#38bdf8",
+  },
+  {
+    name: "Postman",
+    monogram: "API",
+    accent: "#ff6c37",
+  },
+  {
+    name: "n8n",
+    monogram: "n8n",
+    accent: "#ea4b71",
+  },
+  {
+    name: "OpenAI API",
+    monogram: "AI",
+    accent: "#10a37f",
+  },
+  {
+    name: "Three.js",
+    monogram: "3D",
+    accent: "#c4b5fd",
   },
 ];
 

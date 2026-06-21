@@ -1,30 +1,39 @@
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { About, Contact, Experience, Feedbacks, Hero, Navbar, Tech, Works, StarsCanvas, Achievements, Footer } from "./components";
+import { About, Contact, Experience, Hero, Navbar, Tech, StarsCanvas, Footer, InnovationLab, Freelance } from "./components";
+import Explore from "./components/Explore";
 
-const App = () => {
+const Portfolio = () => {
   return (
-    <BrowserRouter>
-      <div className='relative z-0 bg-black'>
-        <div className='bg-hero-pattern bg-cover bg-no-repeat bg-center relative'>
-          <div className='absolute inset-0 bg-gradient-to-b from-black/0 via-black/0  pointer-events-none' aria-hidden />
+    <div className='relative min-h-screen overflow-hidden bg-black'>
+      <StarsCanvas />
+
+      <div className='relative z-10'>
+        <div className='relative'>
           <Navbar />
           <Hero />
         </div>
         <About />
-        {/* <Chatbot /> */}
         <Experience />
+        <InnovationLab />
         <Tech />
-        {/* <Works /> */}
-        {/* <GitHubActivity /> */}
-        {/* <Feedbacks /> */}
-        {/* <Achievements /> */}
+        <Freelance />
         <div className='relative z-0'>
           <Contact />
-          <StarsCanvas />
           <Footer />
         </div>
       </div>
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Portfolio />} />
+        <Route path="/explore" element={<Explore />} />
+      </Routes>
     </BrowserRouter>
   );
 }

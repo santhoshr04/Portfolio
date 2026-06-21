@@ -20,6 +20,8 @@ import redux from "./tech/redux.png";
 import tailwind from "./tech/tailwind.png";
 import php from "./tech/php.png";
 import laravel from "./tech/Laravel.png"
+import adonisjs from "./tech/adonisjs.svg";
+import fusionPro from "./tech/fusion-pro.svg";
 
 import icrew from "./company/icrew.png";
 import nexglimpse from "./company/nexglimpse.png";
@@ -50,6 +52,8 @@ export {
   tailwind,
   laravel,
   php,
+  adonisjs,
+  fusionPro,
   icrew,
   nexglimpse,
   carrent,

@@ -1,293 +1,211 @@
-import React, { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
-import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
 import { SectionWrapper } from "../hoc";
-import { slideIn } from "../utils/motion";
+import { styles } from "../styles";
+import { fadeIn, textVariant } from "../utils/motion";
 
 const Contact = () => {
   const formRef = useRef();
-
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, type: "success", message: "" });
 
-  const [toast, setToast] = useState({
-    show: false,
-    type: "success",
-    message: "",
-  });
-
-  /* =========================
-     Handle Input Change
-  ========================== */
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setForm({
-      ...form,
-      [name]: value,
-    });
+  const handleChange = ({ target: { name, value } }) => {
+    setForm((current) => ({ ...current, [name]: value }));
   };
 
-  /* =========================
-     Auto Hide Toast
-  ========================== */
-
   useEffect(() => {
-    if (toast.show) {
-      const timer = setTimeout(() => {
-        setToast({ ...toast, show: false });
-      }, 3500);
+    if (!toast.show) return undefined;
 
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
+    const timer = setTimeout(() => {
+      setToast((current) => ({ ...current, show: false }));
+    }, 3500);
 
-  /* =========================
-     Handle Submit
-  ========================== */
+    return () => clearTimeout(timer);
+  }, [toast.show]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch(
-        import.meta.env.VITE_DISCORD_WEBHOOK_URL,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: "<@1255742316287889432> New Contact Form Submission",
-            allowed_mentions: {
-              users: ["1255742316287889432"],
+      const response = await fetch(import.meta.env.VITE_DISCORD_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: "<@1255742316287889432> New Contact Form Submission",
+          allowed_mentions: { users: ["1255742316287889432"] },
+          embeds: [
+            {
+              title: "New Contact Form Submission",
+              description: "You have a new contact message.",
+              color: 0x8b5cf6,
+              fields: [
+                { name: "Name", value: form.name },
+                { name: "Email", value: `\`\`\`${form.email}\`\`\`` },
+                { name: "Message", value: form.message },
+              ],
+              footer: { text: `Contact Bot • ${new Date().toLocaleString()}` },
             },
-            embeds: [
-              {
-                title: "New Contact Form Submission",
-                description: "You have a new contact message.",
-                color: 0x8B5CF6,
-          
-                fields: [
-                  {
-                    name: "Name",
-                    value: `${form.name}`,
-                  },
-                  {
-                    name: "Email",
-                    value: `\`\`\`${form.email}\`\`\``,
-                  },
-                  {
-                    name: "Message",
-                    value: `${form.message}`,
-                  },
-                ],
-          
-                footer: {
-                  text: `Contact Bot • ${new Date().toLocaleString()}`,
-                },
-              },
-            ],
-          }),                  
-        }
-      );
+          ],
+        }),
+      });
 
-      if (!response.ok) throw new Error("Failed");
-
-      setLoading(false);
+      if (!response.ok) throw new Error("Failed to send message");
 
       setToast({
         show: true,
         type: "success",
-        message: "Message sent successfully , I will get back to you soon.",
+        message: "Message received. I’ll get back to you soon.",
       });
-
-      setForm({
-        name: "",
-        email: "",
-        message: "",
-      });
+      setForm({ name: "", email: "", message: "" });
     } catch (error) {
       console.error(error);
-      setLoading(false);
-
       setToast({
         show: true,
         type: "error",
-        message: "Something went wrong, please try again later.",
+        message: "The message could not be sent. Please try again.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
+  const fieldClass =
+    "mt-2 w-full rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-gray-600 hover:border-white/20 focus:border-purple-400/70 focus:bg-purple-500/[0.04] focus:ring-4 focus:ring-purple-500/10";
+
   return (
-    <div
-      className="
-        xl:mt-12
-        flex
-        flex-col
-        xl:flex-row
-        gap-10
-        overflow-hidden
-        relative
-      "
-    >
-      {/* 🌍 Earth Section */}
-      <motion.div
-          variants={slideIn("left", "tween", 0.2, 1)}
-          className="
-            order-1
-            xl:flex-1
-            w-full
-            h-[420px]
-            sm:h-[500px]
-            md:h-[550px]
-            xl:h-[650px]
-          "
+    <>
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <motion.div variants={textVariant()} className="max-w-3xl">
+          <p className={styles.sectionSubText}>Start a conversation / 06</p>
+          <h2 className={styles.sectionHeadText}>Let’s build what’s next.</h2>
+          <p className="mt-4 max-w-2xl text-[16px] leading-7 text-secondary sm:text-[17px]">
+            Have a product idea, an automation challenge, or a system that needs
+            a smarter approach? Send the signal—I’ll take it from there.
+          </p>
+        </motion.div>
+      </div>
+
+      <div className="mt-12 grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <motion.div
+          variants={fadeIn("right", "spring", 0.1, 0.85)}
+          className="h-[420px] w-full sm:h-[500px] md:h-[550px] lg:h-[650px]"
         >
-        <EarthCanvas />
-      </motion.div>
+          <EarthCanvas />
+        </motion.div>
 
-      {/* 📩 Contact Form */}
-      <motion.div
-        variants={slideIn("right", "tween", 0.2, 1)}
-        className="
-          order-2
-          flex-[0.75]
-          bg-black-100
-          p-6 sm:p-8
-          rounded-2xl
-        "
-      >
-        <p className={styles.sectionSubText}>Get in touch</p>
-        <h3 className={styles.sectionHeadText}>Contact.</h3>
-
-        <form
-          ref={formRef}
-          onSubmit={handleSubmit}
-          className="mt-10 flex flex-col gap-6"
+        <motion.div
+          variants={fadeIn("left", "spring", 0.2, 0.85)}
+          className="relative flex flex-col justify-center overflow-hidden rounded-[30px] border border-white/10 bg-black/60 p-6 shadow-[0_30px_100px_rgba(76,29,149,0.14)] backdrop-blur-xl sm:p-10 lg:p-12"
         >
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="Your Name"
-            required
-            className="bg-tertiary py-3 px-5 text-white rounded-lg outline-none"
-          />
+          <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-purple-600/10 blur-[80px]" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:38px_38px]" />
 
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="Your Email"
-            required
-            className="bg-tertiary py-3 px-5 text-white rounded-lg outline-none"
-          />
+          <div className="relative mb-8 flex items-center justify-between border-b border-white/10 pb-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">New enquiry</p>
+              <h3 className="mt-2 text-2xl font-bold text-white">Tell me about the project</h3>
+            </div>
+            <div className="hidden h-11 w-11 items-center justify-center rounded-2xl border border-purple-400/20 bg-purple-500/10 text-purple-300 sm:flex">
+              ↗
+            </div>
+          </div>
 
-          <textarea
-            rows={6}
-            name="message"
-            value={form.message}
-            onChange={handleChange}
-            placeholder="Your Message"
-            required
-            className="bg-tertiary py-3 px-5 text-white rounded-lg outline-none"
-          />
+          <form ref={formRef} onSubmit={handleSubmit} className="relative space-y-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className="text-xs font-medium text-gray-400">
+                Your name
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="How should I address you?"
+                  autoComplete="name"
+                  required
+                  className={fieldClass}
+                />
+              </label>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="
-              bg-gradient-to-r
-              from-purple-500
-              to-blue-500
-              py-3 px-8
-              rounded-xl
-              text-white
-              font-bold
-              shadow-lg
-              hover:scale-105
-              transition
-              duration-300
-              disabled:opacity-50
-            "
-          >
-            {loading ? "Sending..." : "Send Message"}
-          </button>
-        </form>
-      </motion.div>
+              <label className="text-xs font-medium text-gray-400">
+                Email address
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="you@company.com"
+                  autoComplete="email"
+                  required
+                  className={fieldClass}
+                />
+              </label>
+            </div>
 
-      {/* ======================
-            PREMIUM TOAST
-      ====================== */}
+            <label className="block text-xs font-medium text-gray-400">
+              Project details
+              <textarea
+                rows={7}
+                name="message"
+                value={form.message}
+                onChange={handleChange}
+                placeholder="What are you building, and what outcome do you want?"
+                required
+                className={`${fieldClass} resize-none`}
+              />
+            </label>
+
+            <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-5 text-gray-600">
+                Your details are only used to reply to this enquiry.
+              </p>
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative min-w-[170px] overflow-hidden rounded-2xl bg-white px-6 py-3.5 text-sm font-bold text-black transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <span className="absolute inset-0 translate-y-full bg-gradient-to-r from-purple-300 to-cyan-300 transition duration-300 group-hover:translate-y-0" />
+                <span className="relative z-10">{loading ? "Transmitting..." : "Send message  ↗"}</span>
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      </div>
 
       <AnimatePresence>
         {toast.show && (
           <motion.div
-            initial={{ opacity: 0, x: 80 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 80 }}
-            transition={{ duration: 0.4 }}
-            className="fixed bottom-6 right-6 z-50"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            className="fixed bottom-6 right-6 z-[70] w-[calc(100%-3rem)] max-w-sm"
           >
-            <div
-              className={`
-                relative overflow-hidden
-                w-[320px] sm:w-[360px]
-                p-5
-                rounded-2xl
-                backdrop-blur-xl
-                border border-white/10
-                shadow-2xl
-                ${
-                  toast.type === "success"
-                    ? "bg-gradient-to-br from-emerald-500/90 to-green-600/90"
-                    : "bg-gradient-to-br from-red-500/90 to-rose-600/90"
-                }
-                text-white
-              `}
-            >
-              {/* Icon + Message */}
-              <div className="flex items-start gap-3">
-                <div className="text-2xl">
-                  {toast.type === "success" ? "✅" : "❌"}
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#09070f]/95 p-4 shadow-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${toast.type === "success" ? "bg-emerald-400/10 text-emerald-300" : "bg-red-400/10 text-red-300"}`}>
+                  {toast.type === "success" ? "✓" : "!"}
                 </div>
-
                 <div>
-                  <p className="font-semibold text-[15px]">
-                    {toast.type === "success"
-                      ? "Message Sent"
-                      : "Submission Failed"}
+                  <p className="text-sm font-semibold text-white">
+                    {toast.type === "success" ? "Signal received" : "Transmission failed"}
                   </p>
-                  <p className="text-sm opacity-90 mt-1">
-                    {toast.message}
-                  </p>
+                  <p className="mt-1 text-xs leading-5 text-gray-400">{toast.message}</p>
                 </div>
               </div>
-
-              {/* Progress Bar */}
               <motion.div
                 initial={{ width: "100%" }}
                 animate={{ width: "0%" }}
                 transition={{ duration: 3.5, ease: "linear" }}
-                className="absolute bottom-0 left-0 h-[4px] bg-white/80"
+                className={`absolute bottom-0 left-0 h-0.5 ${toast.type === "success" ? "bg-emerald-400" : "bg-red-400"}`}
               />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 
