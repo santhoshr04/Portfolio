@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { StarsCanvas } from "./canvas";
 
-const DEFAULT_CAL_LINK = "https://cal.com/santhoshr04";
+const DEFAULT_CAL_LINK = "https://app.cal.com/santhosh-r/client-consultation-30min";
 
 const CalBooking = () => {
   const [isLoading, setIsLoading] = useState(true);
