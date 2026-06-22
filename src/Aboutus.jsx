@@ -64,7 +64,7 @@ function Aboutus() {
                             Services
                         </a>
                         <a
-                            href="/cal-booking"
+                            href="/#contact"
                             className={`${
                                 darkMode ? "text-gray-300" : "text-gray-600"
                             } hover:text-purple-500`}

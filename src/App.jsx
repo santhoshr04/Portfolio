@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { About, Contact, Experience, Hero, Navbar, Tech, StarsCanvas, Footer, InnovationLab, Freelance } from "./components";
+import CalBooking from "./components/CalBooking";
 import Explore from "./components/Explore";
 
 const Portfolio = () => {
@@ -33,6 +34,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Portfolio />} />
         <Route path="/explore" element={<Explore />} />
+        <Route path="/cal-booking" element={<CalBooking />} />
       </Routes>
     </BrowserRouter>
   );

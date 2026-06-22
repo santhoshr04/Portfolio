@@ -104,17 +104,6 @@ const CoreScene = () => {
           </mesh>
         </group>
       ))}
-
-      <Points positions={particles} stride={3} frustumCulled>
-        <PointMaterial
-          transparent
-          color="#c4b5fd"
-          size={0.025}
-          sizeAttenuation
-          depthWrite={false}
-          opacity={0.7}
-        />
-      </Points>
     </group>
   );
 };
